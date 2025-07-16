@@ -5,11 +5,13 @@ import ResetPassword from './modules/Password/resetPassword';
 import EmployeeProfile from './modules/employee/employee-profile';
 import Dashboard from './modules/dashboards/employee_dashboard';
 import AttendancePage from './modules/dashboards/attendance';
+import LandingPage from './modules/landingPage/landingPage';
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/forget-password" element={<ForgotPassword />} />

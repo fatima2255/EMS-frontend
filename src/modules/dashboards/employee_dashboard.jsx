@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
 
   // Live clock update
   useEffect(() => {
@@ -36,7 +37,7 @@ const Dashboard = () => {
       <div
         className={`transition-all duration-300 ${
           isSidebarOpen ? 'w-64' : 'w-16'
-        } bg-purple-700 text-white relative`}
+        } bg-blue-950 text-white relative`}
       >
         <div className="flex items-center justify-between px-4 py-4">
           {isSidebarOpen ? (
@@ -53,7 +54,7 @@ const Dashboard = () => {
         {!isSidebarOpen && (
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-5 right-[23px] bg-purple-700 text-white p-2 rounded-r-md shadow-lg"
+            className="absolute top-5 right-[23px] bg-[#102a43] p-2 rounded-r-md shadow-lg"
           >
             <FaBars />
           </button>
@@ -66,7 +67,7 @@ const Dashboard = () => {
           <SidebarLink icon={<FaUser />} label="My Profile" open={isSidebarOpen} />
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded text-left"
+            className="flex items-center gap-2 hover:bg-blue-900 p-2 rounded text-left"
           >
             <FaSignOutAlt />
             {isSidebarOpen && 'Sign Out'}
@@ -145,7 +146,7 @@ const Dashboard = () => {
 // Sidebar Link Component
 const SidebarLink = ({ icon, label, open, to = "#" }) => {
   return (
-    <Link to={to} className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded">
+    <Link to={to} className="flex items-center gap-2 hover:bg-blue-900 p-2 rounded">
       {icon}
       {open && label}
     </Link>
@@ -159,7 +160,7 @@ const SummaryCard = ({ title, value, icon }) => (
       <p className="text-sm text-gray-500">{title}</p>
       <h3 className="text-2xl font-bold">{value}</h3>
     </div>
-    <div className="text-3xl text-purple-600">{icon}</div>
+    <div className="text-3xl text-blue-950">{icon}</div>
   </div>
 );
 

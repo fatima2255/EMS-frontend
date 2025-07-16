@@ -26,10 +26,11 @@ const Signin = () => {
         try {
             const data = await signinUser(form);
 
-            // Save tokens only
+            
             localStorage.setItem('accessToken', data.accessToken);
             localStorage.setItem('refreshToken', data.refreshToken);
-
+            localStorage.setItem('role', data.role); 
+            localStorage.setItem('user_id', data.userId);
             // Dispatch user info to Redux
             dispatch(login(data));
 
@@ -39,11 +40,9 @@ const Signin = () => {
             const role = localStorage.getItem('role');
             if (role === 'admin') {
                 navigate('/dashboard');
-            } else if (role === 'manager') {
-                navigate('/manager-dashboard'); // optional: create a manager route
-            } else {
-                navigate('/employee-dashboard');
-            }
+            } else if (role === 'manager'|| role === 'employee') {
+                navigate('/employee-dashboard'); 
+            } 
 
         } catch (err) {
             setError(err.message);

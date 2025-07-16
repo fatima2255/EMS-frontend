@@ -1,32 +1,76 @@
-import { useState } from 'react';
-import { FaBars, FaTimes, FaCheck, FaClock, FaTasks } from 'react-icons/fa';
-import { MdOutlineDashboard, MdOutlineCalendarToday } from 'react-icons/md';
+import { useState, useEffect } from 'react';
+import {
+  FaBars,
+  FaTimes,
+  FaSignOutAlt,
+  FaHome,
+  FaUser,
+  FaClock,
+  FaTasks,
+} from 'react-icons/fa';
+import { MdOutlineCalendarToday } from 'react-icons/md';
+import { useNavigate, Link } from 'react-router-dom';
+import { logout } from '../../slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Live clock update
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleSignOut = () => {
+    dispatch(logout());
+    navigate('/signin');
+  };
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar */}
-      <div className={`transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-16'} bg-purple-700 text-white`}>
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarOpen ? 'w-64' : 'w-16'
+        } bg-purple-700 text-white relative`}
+      >
         <div className="flex items-center justify-between px-4 py-4">
-          <h1 className={`text-lg font-bold transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'} whitespace-nowrap`}>
-            Employee
-          </h1>
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            {isSidebarOpen ? <FaTimes /> : <FaBars />}
-          </button>
+          {isSidebarOpen ? (
+            <>
+              <h1 className="text-lg font-bold whitespace-nowrap">Employee</h1>
+              <button onClick={() => setIsSidebarOpen(false)}>
+                <FaTimes />
+              </button>
+            </>
+          ) : null}
         </div>
-        <nav className="flex flex-col space-y-2 mt-4 px-4">
-          <a href="#" className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded">
-            <MdOutlineDashboard /> {isSidebarOpen && 'Dashboard'}
-          </a>
-          <a href="#" className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded">
-            <FaClock /> {isSidebarOpen && 'Attendance'}
-          </a>
-          <a href="#" className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded">
-            <FaTasks /> {isSidebarOpen && 'Tasks'}
-          </a>
+
+        {/* Sidebar toggle button when closed */}
+        {!isSidebarOpen && (
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="absolute top-5 right-[23px] bg-purple-700 text-white p-2 rounded-r-md shadow-lg"
+          >
+            <FaBars />
+          </button>
+        )}
+
+        <nav className="flex flex-col space-y-2 mt-8 px-2">
+          <SidebarLink icon={<FaHome />} label="Home" open={isSidebarOpen} />
+          <SidebarLink icon={<FaClock />} label="Attendance" open={isSidebarOpen} to="/attendance" />
+          <SidebarLink icon={<FaTasks />} label="Tasks" open={isSidebarOpen} />
+          <SidebarLink icon={<FaUser />} label="My Profile" open={isSidebarOpen} />
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded text-left"
+          >
+            <FaSignOutAlt />
+            {isSidebarOpen && 'Sign Out'}
+          </button>
         </nav>
       </div>
 
@@ -36,17 +80,19 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2 text-gray-600">
             <MdOutlineCalendarToday className="text-xl" />
-            <span>{new Date().toLocaleString()}</span>
+            <span>{currentTime.toLocaleString()}</span>
           </div>
-          <div className="flex gap-4">
-            <button className="bg-green-500 px-4 py-2 rounded text-white">Check In</button>
-            <button className="bg-red-500 px-4 py-2 rounded text-white">Check Out</button>
-          </div>
+          <button
+            onClick={handleSignOut}
+            className="bg-red-500 px-4 py-2 rounded text-white"
+          >
+            Sign Out
+          </button>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <SummaryCard title="Total Attendance" value="24" icon={<FaCheck />} />
+          <SummaryCard title="Total Attendance" value="24" icon={<FaClock />} />
           <SummaryCard title="Holiday This Year" value="65" icon={<FaClock />} />
           <SummaryCard title="Leave This Year" value="15" icon={<FaClock />} />
         </div>
@@ -57,7 +103,6 @@ const Dashboard = () => {
           <div className="bg-white p-4 rounded shadow col-span-2">
             <h3 className="text-lg font-semibold mb-2">Employee Activity</h3>
             <div className="h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-              {/* Replace with chart component */}
               Bar Chart Here
             </div>
           </div>
@@ -97,6 +142,17 @@ const Dashboard = () => {
   );
 };
 
+// Sidebar Link Component
+const SidebarLink = ({ icon, label, open, to = "#" }) => {
+  return (
+    <Link to={to} className="flex items-center gap-2 hover:bg-purple-800 p-2 rounded">
+      {icon}
+      {open && label}
+    </Link>
+  );
+};
+
+// Summary Card Component
 const SummaryCard = ({ title, value, icon }) => (
   <div className="bg-white p-4 rounded shadow flex items-center justify-between">
     <div>

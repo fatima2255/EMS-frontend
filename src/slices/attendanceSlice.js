@@ -12,10 +12,7 @@ const AttendanceSlice = createSlice({
         setAttendanceLogs: (state, action) => {
             state.activity = action.payload;
         },
-
-        // getAttendaceLogs: (state, action) => {
-
-        // },
+               
     }
 });
 

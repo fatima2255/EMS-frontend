@@ -39,7 +39,7 @@ const Signin = () => {
             // Navigate according to role
             const role = localStorage.getItem('role');
             if (role === 'admin') {
-                navigate('/dashboard');
+                navigate('/admin-dashboard');
             } else if (role === 'manager'|| role === 'employee') {
                 navigate('/employee-dashboard'); 
             } 
@@ -89,9 +89,6 @@ const Signin = () => {
                     </button>
 
                     <div className='text-center mt-4 text-white'>
-                        <p>
-                            Don't have an account? <a href="/signup" className="text-indigo-400 hover:underline">Sign Up</a>
-                        </p>
                         <p>
                             <a href="/forget-password" className="text-indigo-400 hover:underline">Forget password?</a>
                         </p>

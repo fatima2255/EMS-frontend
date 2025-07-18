@@ -39,13 +39,8 @@ const EmployeeProfile = () => {
             const token = localStorage.getItem('accessToken');
             await addEmployeeProfile(dataToSend, token);
 
-            // Clear temporary values
-            // localStorage.removeItem('user_id');
-            // localStorage.removeItem('role');
-            // localStorage.removeItem('accessToken');
-
-            alert("Profile submitted successfully. Please sign in.");
-            navigate('/signin');
+            alert("Profile submitted successfully.");
+            navigate('/admin-dashboard'); 
         } catch (err) {
             alert('Error: ' + (err.message || 'Something went wrong'));
         }

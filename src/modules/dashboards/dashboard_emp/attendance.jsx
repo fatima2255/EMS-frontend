@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setAttendanceLogs } from '../../slices/attendanceSlice';
-import axios from 'axios';
+import { setAttendanceLogs } from '../../../slices/attendanceSlice';
 import { FaSignInAlt, FaSignOutAlt, FaCoffee, FaUndo } from 'react-icons/fa';
+import { getAttendanceLogs, postAttendanceActivity } from '../../../api/apiConfig';
+import { useNavigate } from 'react-router-dom';
 
 const AttendancePage = () => {
   const dispatch = useDispatch();
@@ -12,8 +13,8 @@ const AttendancePage = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/attendance/${userId}`);
-      const sorted = res.data.sort((a, b) => new Date(a.activity_time) - new Date(b.activity_time));
+      const data = await getAttendanceLogs(userId);
+      const sorted = data.sort((a, b) => new Date(a.activity_time) - new Date(b.activity_time));
       setLogs(sorted);
       dispatch(setAttendanceLogs(sorted));
     } catch (err) {
@@ -42,20 +43,36 @@ const AttendancePage = () => {
 
   const handleActivity = async (activity) => {
     try {
-      await axios.post('http://localhost:5000/api/attendance', {
-        userId,
-        activity
-      });
-
+      await postAttendanceActivity({ userId, activity });
       setMessage(`✅ Successfully performed: ${activity}`);
-      await fetchLogs(); // Refresh logs after activity
+      await fetchLogs();
     } catch (err) {
       setMessage(err.response?.data?.message || '❌ Error performing action');
     }
   };
+  const navigate = useNavigate();
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   return (
+
     <div className="p-6 max-w-4xl mx-auto">
+      <button
+        onClick={handleBack}
+        className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+      >
+        <svg
+          className="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </button>
       <div className="bg-white shadow-lg rounded-2xl p-6">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">🕒 Attendance Panel</h2>
 
@@ -108,15 +125,14 @@ const AttendancePage = () => {
             {todayLogs.map((log, i) => (
               <li
                 key={i}
-                className={`flex items-center gap-3 p-3 rounded-lg shadow-sm ${
-                  log.activity === 'checkin'
+                className={`flex items-center gap-3 p-3 rounded-lg shadow-sm ${log.activity === 'checkin'
                     ? 'bg-green-50 text-green-700'
                     : log.activity === 'checkout'
-                    ? 'bg-red-50 text-red-700'
-                    : log.activity === 'brb'
-                    ? 'bg-yellow-50 text-yellow-800'
-                    : 'bg-blue-50 text-blue-700'
-                }`}
+                      ? 'bg-red-50 text-red-700'
+                      : log.activity === 'brb'
+                        ? 'bg-yellow-50 text-yellow-800'
+                        : 'bg-blue-50 text-blue-700'
+                  }`}
               >
                 <span className="font-semibold uppercase w-20">{log.activity}</span>
                 <span>{new Date(log.activity_time).toLocaleTimeString()}</span>

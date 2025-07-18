@@ -28,11 +28,11 @@ const LandingPage = () => {
             </button>
           </Link>
 
-          <Link to="/signup">
+          {/* <Link to="/signup">
             <button className="w-full flex items-center justify-center gap-2 bg-[#1e3a5f] hover:bg-[#102a43] text-white py-3 px-4 rounded-xl transition text-lg shadow-md">
               <FaUserPlus /> Sign Up
             </button>
-          </Link>
+          </Link> */}
 
           <div className="mt-8 text-sm text-gray-500 text-center">
             Crafted with ❤️ for efficient employee management.

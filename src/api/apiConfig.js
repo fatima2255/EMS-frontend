@@ -1,9 +1,7 @@
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
-
-
-//============================================= RESET PASSWORD APIS ==============================================
+//============================================= RESET PASSWORD APIs ==============================================
 
 export const sendResetLink = async (email) => {
   try {
@@ -24,7 +22,7 @@ export const resetPassword = async (token, password) => {
 };
 
 
-//============================================= AUTH APIS ==============================================
+//============================================== AUTH APIs  ========================================================
 export const signupUser = async (form) => {
   try {
     const res = await axios.post(`${API_URL}/auth/signup`, form);
@@ -46,7 +44,7 @@ export const signinUser = async (form) => {
   }
 };
 
-//========================================= EMPLOYEE APIS===============================================
+//============================================= EMPLOYEE APIs =======================================================
 export const addEmployeeProfile = async (data, token) => {
   try {
     const response = await axios.post(`${API_URL}/employees/add`, data, {
@@ -59,4 +57,21 @@ export const addEmployeeProfile = async (data, token) => {
   } catch (error) {
     throw error.response ? error.response.data : error;
   }
+};
+
+//============================================= ATTENDANCE APIs ====================================================
+
+export const getAttendanceLogs = async (userId) => {
+  const response = await axios.get(`${API_URL}/attendance/${userId}`);
+  return response.data;
+};
+
+export const postAttendanceActivity = async ({ userId, activity }) => {
+  const response = await axios.post(`${API_URL}/attendance`, { userId, activity });
+  return response.data;
+};
+
+export const fetchAllAttendanceLogs = async () => {
+  const res = await axios.get(`${API_URL}/attendance`);
+  return res.data;
 };

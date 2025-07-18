@@ -25,7 +25,14 @@ export const resetPassword = async (token, password) => {
 //============================================== AUTH APIs  ========================================================
 export const signupUser = async (form) => {
   try {
-    const res = await axios.post(`${API_URL}/auth/signup`, form);
+    const token = localStorage.getItem('accessToken');
+
+    const res = await axios.post(`${API_URL}/auth/signup`, form, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return res.data;
   } catch (err) {
     const message = err.response?.data?.message || 'Signup failed';
@@ -59,19 +66,59 @@ export const addEmployeeProfile = async (data, token) => {
   }
 };
 
+export const getEmployees = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/employees/get`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+}
+
 //============================================= ATTENDANCE APIs ====================================================
 
 export const getAttendanceLogs = async (userId) => {
-  const response = await axios.get(`${API_URL}/attendance/${userId}`);
+  const token = localStorage.getItem("accessToken");
+
+  const response = await axios.get(`${API_URL}/attendance/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
   return response.data;
 };
 
+// Post new attendance activity with token
 export const postAttendanceActivity = async ({ userId, activity }) => {
-  const response = await axios.post(`${API_URL}/attendance`, { userId, activity });
+  const token = localStorage.getItem("accessToken");
+
+  const response = await axios.post(
+    `${API_URL}/attendance`,
+    { userId, activity },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
   return response.data;
 };
 
+// Fetch all attendance logs with token
 export const fetchAllAttendanceLogs = async () => {
-  const res = await axios.get(`${API_URL}/attendance`);
+  const token = localStorage.getItem("accessToken");
+
+  const res = await axios.get(`${API_URL}/attendance`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
   return res.data;
 };

@@ -1,10 +1,12 @@
+import { label } from 'framer-motion/client';
 import DashboardLayout from '../../../layouts/dashboard_layout';
 import { FaHome, FaUserPlus, FaClock } from 'react-icons/fa';
 
 const sidebarLinks = [
   { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
   { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-  { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
+  { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock />},
+  { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus />},
 ];
 
 const AdminDashboard = () => {

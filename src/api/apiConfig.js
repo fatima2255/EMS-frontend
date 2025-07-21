@@ -12,8 +12,9 @@ export const sendResetLink = async (email) => {
   }
 };
 
-export const resetPassword = async (token, password) => {
+export const resetPassword = async (password) => {
   try {
+    const token = localStorage.getItem("accessToken");
     const res = await axios.post(`${API_URL}/reset-password/${token}`, { password });
     return res.data;
   } catch (error) {
@@ -25,8 +26,7 @@ export const resetPassword = async (token, password) => {
 //============================================== AUTH APIs  ========================================================
 export const signupUser = async (form) => {
   try {
-    const token = localStorage.getItem('accessToken');
-
+    const token = localStorage.getItem("accessToken");
     const res = await axios.post(`${API_URL}/auth/signup`, form, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -52,7 +52,8 @@ export const signinUser = async (form) => {
 };
 
 //============================================= EMPLOYEE APIs =======================================================
-export const addEmployeeProfile = async (data, token) => {
+export const addEmployeeProfile = async (data) => {
+  const token = localStorage.getItem("accessToken");
   try {
     const response = await axios.post(`${API_URL}/employees/add`, data, {
       headers: {
@@ -66,7 +67,8 @@ export const addEmployeeProfile = async (data, token) => {
   }
 };
 
-export const getEmployees = async (token) => {
+export const getEmployees = async () => {
+  const token = localStorage.getItem("accessToken");
   try {
     const response = await axios.get(`${API_URL}/employees/get`, {
       headers: {
@@ -83,7 +85,6 @@ export const getEmployees = async (token) => {
 
 export const getAttendanceLogs = async (userId) => {
   const token = localStorage.getItem("accessToken");
-
   const response = await axios.get(`${API_URL}/attendance/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -96,7 +97,6 @@ export const getAttendanceLogs = async (userId) => {
 // Post new attendance activity with token
 export const postAttendanceActivity = async ({ userId, activity }) => {
   const token = localStorage.getItem("accessToken");
-
   const response = await axios.post(
     `${API_URL}/attendance`,
     { userId, activity },
@@ -113,7 +113,6 @@ export const postAttendanceActivity = async ({ userId, activity }) => {
 // Fetch all attendance logs with token
 export const fetchAllAttendanceLogs = async () => {
   const token = localStorage.getItem("accessToken");
-
   const res = await axios.get(`${API_URL}/attendance`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -121,4 +120,62 @@ export const fetchAllAttendanceLogs = async () => {
   });
 
   return res.data;
+};
+
+
+//===================================================== PROJECT APIs ==========================================================
+
+export const createProject = async (title, description) => {
+  const token = localStorage.getItem("accessToken");
+  const response = await axios.post(
+    `${API_URL}/projects/add`,
+    { title, description },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getAllProjects = async () => {
+  const token = localStorage.getItem("accessToken");
+  const response = await axios.get(`${API_URL}/projects/get`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+
+//===================================================== TASK APIs ==========================================================
+
+
+export const createTask = (taskData) => {
+  const token = localStorage.getItem("accessToken");
+  return axios.post(`${API_URL}/tasks/add`, taskData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getAllTasks = async () => {
+  const token = localStorage.getItem('accessToken');
+  const response = await axios.get(`${API_URL}/tasks`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+
+export const updateTaskStatus = async (taskId, status) => {
+  const response = await axios.patch(`${API_URL}/tasks/update-status/${taskId}`, {
+    status
+  });
+  return response.data;
 };

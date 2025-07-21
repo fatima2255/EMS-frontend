@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAllAttendanceLogs, getAttendanceLogs } from "../../../api/apiConfig";
 import DashboardLayout from "../../../layouts/dashboard_layout";
-import { FaHome, FaUserPlus, FaClock } from 'react-icons/fa';
+import { FaHome, FaUserPlus, FaClock, FaProjectDiagram, FaTasks} from 'react-icons/fa';
 
 const AdminAttendanceView = () => {
   const [logs, setLogs] = useState([]);
@@ -16,7 +16,12 @@ const AdminAttendanceView = () => {
     { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
     { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
     { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
+    { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
+    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
+    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
+    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
   ];
+
 
   const fetchAllLogs = async () => {
     try {
@@ -108,7 +113,7 @@ const AdminAttendanceView = () => {
                   <tr key={log._id || index} className="border-b hover:bg-gray-100">
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{log.userId}</td>
-                    <td className="px-4 py-2">{log.fullName || "Unknown"}</td>
+                    <td className="px-4 py-2">{log.fullName || "unknown"}</td>
                     <td className="px-4 py-2 capitalize">{log.activity}</td>
                     <td className="px-4 py-2">{formatDate(log.activity_time)}</td>
                     <td className="px-4 py-2">{formatTime(log.activity_time)}</td>

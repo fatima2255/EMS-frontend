@@ -14,7 +14,7 @@ function ResetPassword() {
     setMsg('');
     setError('');
     try {
-      const data = await resetPassword(token, password);
+      const data = await resetPassword(password);
       setMsg(data.message);
 
       setTimeout(() => {

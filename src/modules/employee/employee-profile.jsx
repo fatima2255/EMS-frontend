@@ -36,8 +36,7 @@ const EmployeeProfile = () => {
         };
 
         try {
-            const token = localStorage.getItem('accessToken');
-            await addEmployeeProfile(dataToSend, token);
+            await addEmployeeProfile(dataToSend);
 
             alert("Profile submitted successfully.");
             navigate('/admin-dashboard'); 

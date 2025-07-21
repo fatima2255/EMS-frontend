@@ -10,6 +10,11 @@ import AdminDashboard from './modules/dashboards/dashboard_admin/admin_dashboard
 import AdminAttendanceView from './modules/dashboards/dashboard_admin/attendance-view';
 import NotFoundPage from './modules/not-found-page.jsx/not_found';
 import ViewAllEmployees from './modules/dashboards/dashboard_admin/allEmployees';
+import AddProject from './modules/dashboards/dashboard_admin/Projects/projects';
+import ViewProjects from './modules/dashboards/dashboard_admin/Projects/viewProjects';
+import AddTask from './modules/dashboards/dashboard_emp/Tasks/addTask';
+import TaskList from './modules/dashboards/dashboard_emp/Tasks/viewTasks';
+import MyTasks from './modules/dashboards/dashboard_emp/Tasks/myTasks';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRouteByRole from '../src/utils/protectedRoutes';
 
@@ -44,6 +49,12 @@ function App() {
     
   
       <Route path="/view-all-employees" element={<ViewAllEmployees />} />
+      <Route path="/add-projects" element={<AddProject />} />
+      <Route path="/view-projects" element={<ViewProjects />} />
+
+      <Route path="/add-tasks" element={<AddTask />} />
+      <Route path="/tasks" element={<TaskList />} />
+      <Route path="/myTasks" element={<MyTasks />} />
 
 
     </Routes>

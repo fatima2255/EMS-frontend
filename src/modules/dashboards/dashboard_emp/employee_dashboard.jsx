@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../../layouts/dashboard_layout';
-import { FaHome, FaClock, FaTasks, FaUser } from 'react-icons/fa';
-import { getAttendanceLogs } from '../../../api/apiConfig';
+import { FaHome, FaClock, FaTasks, FaUser, FaProjectDiagram } from 'react-icons/fa';
+import { getAttendanceLogs, getAllTasks } from '../../../api/apiConfig';
+
+const role = localStorage.getItem('role');
 
 // Sidebar links
-const sidebarLinks = [
-  { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-  { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-  { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-  { to: '/profile', label: 'My Profile', icon: <FaUser /> },
-];
-
-
+const sidebarLinks = role === "manager"
+  ? [
+    { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
+    { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
+    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
+    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
+    { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
+    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
+  ]
+  : [
+    { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
+    { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
+    { to: '/myTasks', label: 'My Tasks', icon: <FaTasks /> },
+    { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
+  ];
 
 // Summary Card Component
 const SummaryCard = ({ title, value, icon }) => (
@@ -33,9 +42,14 @@ const WorkingHoursCard = ({ userId }) => {
   useEffect(() => {
     const fetchAndCalculate = async () => {
       try {
-        const entries = await getAttendanceLogs(userId); 
+        const entries = await getAttendanceLogs(userId);
+        const today = new Date().toISOString().split('T')[0];
+        const todayEntries = entries.filter((entry) => {
+          const entryDate = new Date(entry.activity_time).toISOString().split('T')[0];
+          return entryDate === today;
+        });
 
-        const sortedEntries = entries.sort(
+        const sortedEntries = todayEntries.sort(
           (a, b) => new Date(a.activity_time) - new Date(b.activity_time)
         );
 
@@ -44,15 +58,12 @@ const WorkingHoursCard = ({ userId }) => {
         let brbTime = null;
         let inactiveTime = 0;
 
-        sortedEntries.forEach(entry => {
+        sortedEntries.forEach((entry) => {
           const time = new Date(entry.activity_time);
-          if (entry.activity === 'checkin') {
-            checkIn = time;
-          } else if (entry.activity === 'checkout') {
-            checkOut = time;
-          } else if (entry.activity === 'brb') {
-            brbTime = time;
-          } else if (entry.activity === 'back' && brbTime) {
+          if (entry.activity === 'checkin') checkIn = time;
+          else if (entry.activity === 'checkout') checkOut = time;
+          else if (entry.activity === 'brb') brbTime = time;
+          else if (entry.activity === 'back' && brbTime) {
             inactiveTime += time - brbTime;
             brbTime = null;
           }
@@ -69,6 +80,8 @@ const WorkingHoursCard = ({ userId }) => {
             const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((total % (1000 * 60)) / 1000);
             setTotalTime(`${hours} hours ${minutes} minutes ${seconds} seconds`);
+          } else {
+            setTotalTime('Not checked in today');
           }
         };
 
@@ -99,10 +112,42 @@ const WorkingHoursCard = ({ userId }) => {
 
 // Main Dashboard
 const EmployeeDashboard = () => {
-  const userId = localStorage.getItem("user_id"); 
+  const userId = localStorage.getItem("user_id");
+  const [myTasks, setMyTasks] = useState([]);
+  const [completedCount, setCompletedCount] = useState(0);
+
+  const totalTasks = myTasks.length;
+  const percentage = totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const allTasks = await getAllTasks();
+        const userIdNum = Number(userId);
+        const today = new Date();
+
+        // Filter tasks assigned to user and due today or later
+        const userTasks = allTasks.filter(task =>
+          task.assigned_to === userIdNum &&
+          new Date(task.due_date) >= today
+        );
+
+        // Count completed tasks
+        const completed = userTasks.filter(task => task.status === 'completed');
+
+        setMyTasks(userTasks);
+        setCompletedCount(completed.length);
+
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, [userId]);
 
   return (
-    <DashboardLayout role="Employee" sidebarLinks={sidebarLinks}>
+    <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <SummaryCard title="Total Attendance" value="24" icon={<FaClock />} />
@@ -121,8 +166,11 @@ const EmployeeDashboard = () => {
         <div className="bg-white p-4 rounded shadow">
           <h3 className="text-lg font-semibold mb-4">Complete Task Target</h3>
           <div className="w-32 h-32 mx-auto rounded-full border-[12px] border-yellow-400 flex items-center justify-center text-xl font-bold">
-            78%
+            {percentage}%
           </div>
+          <p className="text-center text-sm text-gray-500 mt-2">
+            {completedCount} of {totalTasks} tasks completed
+          </p>
         </div>
       </div>
 
@@ -132,10 +180,18 @@ const EmployeeDashboard = () => {
         <div className="bg-white p-4 rounded shadow">
           <h3 className="text-lg font-semibold mb-2">Today's Tasks</h3>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Update employee profiles</li>
-            <li>Review attendance logs</li>
-            <li>Submit payroll summary</li>
-            <li>Attend team stand-up</li>
+            {myTasks.length > 0 ? (
+              myTasks.map((task) => (
+                <li key={task._id}>
+                  <span className="font-medium">{task.task_name}</span>: {task.task_description}
+                  <span className="block text-sm text-gray-500">
+                    Due: {new Date(task.due_date).toLocaleDateString()}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-500">No active tasks for today.</li>
+            )}
           </ul>
         </div>
       </div>

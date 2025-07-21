@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setAttendanceLogs } from '../../../slices/attendanceSlice';
 import { FaSignInAlt, FaSignOutAlt, FaCoffee, FaUndo } from 'react-icons/fa';
 import { getAttendanceLogs, postAttendanceActivity } from '../../../api/apiConfig';
-import { FaHome, FaClock, FaTasks, FaUser } from 'react-icons/fa';
+import { FaHome, FaClock, FaTasks, FaUser, FaProjectDiagram } from 'react-icons/fa';
 import DashboardLayout from '../../../layouts/dashboard_layout';
 
 const AttendancePage = () => {
@@ -53,12 +53,23 @@ const AttendancePage = () => {
     }
   };
 
-  const sidebarLinks = [
-    { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-    { to: '/profile', label: 'My Profile', icon: <FaUser /> },
-  ];
+  // Sidebar links
+  const sidebarLinks = role === "manager"
+    ? [
+      { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
+      { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
+      { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
+      { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
+      { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
+      { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
+    ]
+    : [
+      { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
+      { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
+      { to: '/myTasks', label: 'My Tasks', icon: <FaTasks /> },
+      { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
+    ];
+
 
   return (
     <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
@@ -116,12 +127,12 @@ const AttendancePage = () => {
                 <li
                   key={i}
                   className={`flex items-center gap-3 p-3 rounded-lg shadow-sm ${log.activity === 'checkin'
-                      ? 'bg-green-50 text-green-700'
-                      : log.activity === 'checkout'
-                        ? 'bg-red-50 text-red-700'
-                        : log.activity === 'brb'
-                          ? 'bg-yellow-50 text-yellow-800'
-                          : 'bg-blue-50 text-blue-700'
+                    ? 'bg-green-50 text-green-700'
+                    : log.activity === 'checkout'
+                      ? 'bg-red-50 text-red-700'
+                      : log.activity === 'brb'
+                        ? 'bg-yellow-50 text-yellow-800'
+                        : 'bg-blue-50 text-blue-700'
                     }`}
                 >
                   <span className="font-semibold uppercase w-20">{log.activity}</span>

@@ -79,7 +79,21 @@ export const getEmployees = async () => {
   } catch (error) {
     throw error.response ? error.response.data : error;
   }
-}
+};
+
+export const updateEmployee = async (userId, updatedData) => {
+  const token = localStorage.getItem('accessToken');
+  const response = await axios.put(
+    `${API_URL}/employees/update/${userId}`,
+    updatedData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
 
 //============================================= ATTENDANCE APIs ====================================================
 
@@ -147,6 +161,30 @@ export const getAllProjects = async () => {
     },
   });
   return response.data;
+};
+
+export const updateProject = async (projectId, data) => {
+  const token = localStorage.getItem('accessToken');
+  return axios.put(`${API_URL}/projects/update/${projectId}`, data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const deleteProject = async (projectId) => {
+  const token = localStorage.getItem('accessToken');
+
+  return axios.delete(`${API_URL}/projects/delete/${projectId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+
+  );
 };
 
 

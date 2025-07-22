@@ -15,12 +15,15 @@ import ViewProjects from './modules/dashboards/dashboard_admin/Projects/viewProj
 import AddTask from './modules/dashboards/dashboard_emp/Tasks/addTask';
 import TaskList from './modules/dashboards/dashboard_emp/Tasks/viewTasks';
 import MyTasks from './modules/dashboards/dashboard_emp/Tasks/myTasks';
+import Report from './modules/dashboards/dashboard_admin/report';
+
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRouteByRole from '../src/utils/protectedRoutes';
 
 function App() {
   return (
     <Routes>
+
       <Route path="/" element={<LandingPage />} />
       <Route
         path="/signup"
@@ -30,32 +33,84 @@ function App() {
           </ProtectedRouteByRole>
         }
       />
+
       <Route path="/signin" element={<Signin />} />
       <Route path="/forget-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/employee-profile" 
-      element={
+
+      <Route path="/employee-profile"
+        element={
           <ProtectedRouteByRole allowedRoles={['admin']}>
             <EmployeeProfile />
           </ProtectedRouteByRole>
-        } 
+        }
       />
-      <Route path="/employee-dashboard" element={<Dashboard />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/attendance" element={<AttendancePage />} />
+
+      <Route path="/employee-dashboard" element={
+        <ProtectedRouteByRole allowedRoles={['manager', 'employee']}>
+          <Dashboard />
+        </ProtectedRouteByRole>
+        } />
+
+      <Route path="/admin-dashboard" element={
+        <ProtectedRouteByRole allowedRoles={['admin']}>
+          <AdminDashboard />
+        </ProtectedRouteByRole>
+      }
+      />
+
+      <Route path="/attendance" element={
+        <ProtectedRouteByRole allowedRoles={['manager', 'employee']}>
+          <AttendancePage />
+        </ProtectedRouteByRole>} />
+
+      <Route path="/view-all-attendance" element={
+        <ProtectedRouteByRole allowedRoles={'admin'}>
+          <AdminAttendanceView />
+        </ProtectedRouteByRole>
+      } 
+      />
       
-      <Route path="/view-all-attendance" element={<AdminAttendanceView />} />
       <Route path="/not-found" element={<NotFoundPage />} />
-    
-  
-      <Route path="/view-all-employees" element={<ViewAllEmployees />} />
-      <Route path="/add-projects" element={<AddProject />} />
-      <Route path="/view-projects" element={<ViewProjects />} />
+      <Route path="/report" element={<Report />} />
 
-      <Route path="/add-tasks" element={<AddTask />} />
-      <Route path="/tasks" element={<TaskList />} />
-      <Route path="/myTasks" element={<MyTasks />} />
+      <Route path="/view-all-employees" element={
+        <ProtectedRouteByRole allowedRoles={['admin']}>
+          <ViewAllEmployees />
+        </ProtectedRouteByRole>
+      } />
 
+      <Route path="/add-projects" element={
+        <ProtectedRouteByRole allowedRoles={['admin']}>
+          <AddProject />
+        </ProtectedRouteByRole>
+      } />
+
+      <Route path="/view-projects" element={
+        <ProtectedRouteByRole allowedRoles={['admin', 'manager']}>
+          <ViewProjects />
+        </ProtectedRouteByRole>
+      } />
+
+      <Route path="/add-tasks" element={
+        <ProtectedRouteByRole allowedRoles={['admin', 'manager']}>
+          <AddTask />
+        </ProtectedRouteByRole>
+        
+        }/>
+
+      <Route path="/tasks" element={
+        <ProtectedRouteByRole allowedRoles={['admin']}>
+          <TaskList />
+        </ProtectedRouteByRole>
+      } />
+
+
+      <Route path="/myTasks" element={
+        <ProtectedRouteByRole allowedRoles={['manager', 'employee']}>
+          <MyTasks />
+        </ProtectedRouteByRole>
+      } />
 
     </Routes>
   )

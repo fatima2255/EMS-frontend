@@ -1,22 +1,13 @@
-import { label } from 'framer-motion/client';
 import DashboardLayout from '../../../layouts/dashboard_layout';
-import { FaHome, FaUserPlus, FaClock, FaProjectDiagram, FaTasks } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../utils/sideLinks';
 
-const sidebarLinks = [
-  { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-  { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-  { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-  { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-  { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-  { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-  { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-  { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-];
+const role = localStorage.getItem("role");
+const sidebarLinks = getSidebarLinks(role);
 
 
 const AdminDashboard = () => {
   return (
-    <DashboardLayout role="Admin" sidebarLinks={sidebarLinks}>
+    <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       <div className="text-xl font-semibold mb-4">Welcome Admin</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded shadow">

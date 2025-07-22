@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
 import { fetchAllAttendanceLogs, getAttendanceLogs } from "../../../api/apiConfig";
 import DashboardLayout from "../../../layouts/dashboard_layout";
-import { FaHome, FaUserPlus, FaClock, FaProjectDiagram, FaTasks} from 'react-icons/fa';
+import { getSidebarLinks } from "../../../utils/sideLinks";
+import { FaSyncAlt } from "react-icons/fa";
 
 const AdminAttendanceView = () => {
   const [logs, setLogs] = useState([]);
   const [searchUserId, setSearchUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchDate, setSearchDate] = useState("");
+
 
   const role = localStorage.getItem("role");
-
-  const sidebarLinks = [
-    { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-    { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-    { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-  ];
+  const sidebarLinks = getSidebarLinks(role);
 
 
   const fetchAllLogs = async () => {
@@ -36,40 +29,57 @@ const AdminAttendanceView = () => {
     }
   };
 
-  const fetchUserLogs = async (userId) => {
+  useEffect(() => {
+    fetchAllLogs();
+  }, []);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    const userId = searchUserId.trim();
+    const date = searchDate.trim();
+
+    if (!userId && !date) {
+      fetchAllLogs();
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await getAttendanceLogs(userId);
-      setLogs(data);
-    } catch (error) {
-      console.error("Error fetching user logs:", error);
-      setError("User not found or server error.");
+      let filteredLogs = [];
+
+      if (userId) {
+        filteredLogs = await getAttendanceLogs(userId);
+      } else {
+        filteredLogs = await fetchAllAttendanceLogs();
+      }
+
+      // If date is provided, filter the logs
+      if (date) {
+        filteredLogs = filteredLogs.filter((log) => {
+          const logDate = new Date(log.activity_time).toISOString().split("T")[0];
+          return logDate === date;
+        });
+      }
+
+      setLogs(filteredLogs);
+    } catch (err) {
+      console.error("Error searching logs:", err);
+      setError("Search failed.");
       setLogs([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchAllLogs();
-  }, []);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setError(null);
-    if (searchUserId.trim() === "") {
-      fetchAllLogs();
-    } else {
-      fetchUserLogs(searchUserId.trim());
-    }
-  };
 
   const formatDate = (datetime) => new Date(datetime).toLocaleDateString();
   const formatTime = (datetime) =>
     new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
-    <DashboardLayout role="Admin" sidebarLinks={sidebarLinks}>
+    <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       <div className="bg-white shadow-xl rounded-xl p-6">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Attendance Logs</h2>
 
@@ -81,11 +91,33 @@ const AdminAttendanceView = () => {
             onChange={(e) => setSearchUserId(e.target.value)}
             className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
+
+          <input
+            type="date"
+            value={searchDate}
+            onChange={(e) => setSearchDate(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+          />
+
           <button
             type="submit"
             className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition"
           >
             Search
+          </button>
+
+          {/* Refresh Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setSearchUserId("");
+              setSearchDate("");
+              fetchAllLogs();
+            }}
+            title="Refresh"
+            className="p-2 bg-gray-200 hover:bg-gray-300 rounded-full text-blue-700 transition"
+          >
+            <FaSyncAlt className="w-5 h-5" />
           </button>
         </form>
 

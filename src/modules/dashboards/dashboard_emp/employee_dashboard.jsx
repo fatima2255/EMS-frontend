@@ -1,26 +1,12 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../../layouts/dashboard_layout';
-import { FaHome, FaClock, FaTasks, FaUser, FaProjectDiagram } from 'react-icons/fa';
+import {FaClock} from 'react-icons/fa';
+import { getSidebarLinks } from '../../../utils/sideLinks';
 import { getAttendanceLogs, getAllTasks } from '../../../api/apiConfig';
 
 const role = localStorage.getItem('role');
+const sidebarLinks = getSidebarLinks(role);
 
-// Sidebar links
-const sidebarLinks = role === "manager"
-  ? [
-    { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-    { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-  ]
-  : [
-    { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/myTasks', label: 'My Tasks', icon: <FaTasks /> },
-    { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-  ];
 
 // Summary Card Component
 const SummaryCard = ({ title, value, icon }) => (

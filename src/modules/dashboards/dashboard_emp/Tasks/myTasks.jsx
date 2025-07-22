@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTasks, getAllProjects, getEmployees, updateTaskStatus } from '../../../../api/apiConfig';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaHome, FaTasks, FaProjectDiagram, FaUser, FaClock } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../../utils/sideLinks';
 
 const MyTasks = () => {
     const userId = localStorage.getItem('user_id');
@@ -10,23 +10,7 @@ const MyTasks = () => {
     const [projects, setProjects] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // Sidebar links
-    const sidebarLinks = role === "manager"
-        ? [
-            { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-            { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-            { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-            { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-            { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-            { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-        ]
-        : [
-            { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-            { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-            { to: '/myTasks', label: 'My Tasks', icon: <FaTasks /> },
-            { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-        ];
+    const sidebarLinks = getSidebarLinks(role);
 
 
     useEffect(() => {
@@ -67,7 +51,7 @@ const MyTasks = () => {
             const response = await updateTaskStatus(taskId, newStatus);
 
             const updatedTasks = tasks.map(task =>
-                task.task_id === taskId // ✅ Match on task_id not _id
+                task.task_id === taskId
                     ? {
                         ...task,
                         status: newStatus,

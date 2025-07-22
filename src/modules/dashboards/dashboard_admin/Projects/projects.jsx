@@ -1,19 +1,10 @@
 import { useState } from 'react';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaHome, FaUserPlus, FaClock, FaProjectDiagram, FaTasks } from 'react-icons/fa';
 import { createProject } from '../../../../api/apiConfig';
+import { getSidebarLinks } from '../../../../utils/sideLinks';
 
-const sidebarLinks =
-  [
-    { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-    { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-    { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-  ];
+const role = localStorage.getItem('role');
+const sidebarLinks = getSidebarLinks(role);
 
 
 const AddProject = () => {

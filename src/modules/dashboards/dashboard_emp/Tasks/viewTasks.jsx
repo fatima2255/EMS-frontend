@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTasks, getAllProjects, getEmployees } from '../../../../api/apiConfig';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaHome, FaClock, FaTasks, FaUser, FaProjectDiagram, FaUserPlus } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../../utils/sideLinks';
+
 
 const TaskList = () => {
     const [tasks, setTasks] = useState([]);
@@ -11,25 +12,7 @@ const TaskList = () => {
 
     const role = localStorage.getItem('role');
 
-    const sidebarLinks = role === "manager"
-        ? [
-            { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-            { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-            { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-            { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-            { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-            { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-        ]
-        : [
-            { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-            { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-            { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-            { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-            { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-            { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-            { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-            { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-        ];
+    const sidebarLinks = getSidebarLinks(role);
 
     useEffect(() => {
         const fetchData = async () => {

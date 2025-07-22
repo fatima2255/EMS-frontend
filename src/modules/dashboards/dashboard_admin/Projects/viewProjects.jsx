@@ -1,29 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaHome, FaProjectDiagram, FaUserPlus, FaClock, FaEdit, FaTrash, FaTasks, FaUser } from 'react-icons/fa';
-import { getAllProjects } from '../../../../api/apiConfig';
+import { FaEdit, FaTrash} from 'react-icons/fa';
+import { getAllProjects, updateProject, deleteProject } from '../../../../api/apiConfig';
+import { getSidebarLinks } from '../../../../utils/sideLinks';
 
 const role = localStorage.getItem('role');
-const sidebarLinks = role === "manager"
-    ? [
-        { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-        { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-        { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-        { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-        { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-        { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    ]
-    : [
-        { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-        { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-        { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-        { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-        { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-        { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-        { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-        { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-    ];
+const sidebarLinks = getSidebarLinks(role);
 
 
 const ViewProjects = () => {
@@ -66,7 +49,7 @@ const ViewProjects = () => {
 
     const handleUpdateSubmit = async () => {
         try {
-            await axios.put(`http://localhost:5000/api/projects/update/${editingProject.project_id}`, {
+            await updateProject(editingProject.project_id, {
                 title: updatedTitle,
                 description: updatedDescription,
             });
@@ -79,14 +62,13 @@ const ViewProjects = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/projects/delete/${id}`);
+            await deleteProject(id);
             setConfirmDeleteId(null);
             fetchAllProjects();
         } catch (err) {
             console.error('Delete failed', err);
         }
     };
-
     return (
         <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
             <div className="min-h-[80vh] p-6 bg-gray-100">

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setAttendanceLogs } from '../../../slices/attendanceSlice';
 import { FaSignInAlt, FaSignOutAlt, FaCoffee, FaUndo } from 'react-icons/fa';
 import { getAttendanceLogs, postAttendanceActivity } from '../../../api/apiConfig';
-import { FaHome, FaClock, FaTasks, FaUser, FaProjectDiagram } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../utils/sideLinks';
 import DashboardLayout from '../../../layouts/dashboard_layout';
 
 const AttendancePage = () => {
@@ -53,22 +53,7 @@ const AttendancePage = () => {
     }
   };
 
-  // Sidebar links
-  const sidebarLinks = role === "manager"
-    ? [
-      { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-      { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-      { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-      { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-      { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-      { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    ]
-    : [
-      { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-      { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-      { to: '/myTasks', label: 'My Tasks', icon: <FaTasks /> },
-      { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-    ];
+ const sidebarLinks = getSidebarLinks(role);
 
 
   return (

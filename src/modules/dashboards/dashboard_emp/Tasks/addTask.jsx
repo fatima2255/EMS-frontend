@@ -2,31 +2,13 @@ import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaHome, FaTasks, FaClock, FaUser, FaProjectDiagram, FaUserPlus } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../../utils/sideLinks';
 import { createTask, getAllProjects, getEmployees } from '../../../../api/apiConfig';
 
 const role = localStorage.getItem('role');
 
 // Sidebar links
-const sidebarLinks = role === "manager"
-    ? [
-        { to: '/employee-dashboard', label: 'Home', icon: <FaHome /> },
-        { to: '/attendance', label: 'Attendance', icon: <FaClock /> },
-        { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-        { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-        { to: '/employee-profile', label: 'My Profile', icon: <FaUser /> },
-        { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    ]
-    : [
-        { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-        { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-        { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-        { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-        { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-        { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-        { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-        { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-    ];
+const sidebarLinks = getSidebarLinks(role);
 
 const AddTask = () => {
     const [projects, setProjects] = useState([]);
@@ -147,7 +129,7 @@ const AddTask = () => {
                             >
                                 <option value="">-- Select Employee --</option>
                                 {users
-                                    .filter(user => user.role?.toLowerCase() === 'employee')
+                                    .filter(user => user.role?.toLowerCase() !== 'admin')
                                     .map(user => (
                                         <option key={user.employeeId} value={user.employeeId}>
                                             {user.fullName} (ID: {user.employeeId})

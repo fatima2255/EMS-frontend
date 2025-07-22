@@ -3,17 +3,15 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { signinUser } from '../../../api/apiConfig';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const Signin = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        username: '',
-        password: '',
-    });
-
+    const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,28 +20,19 @@ const Signin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
         try {
             const data = await signinUser(form);
-
-            
             localStorage.setItem('accessToken', data.accessToken);
             localStorage.setItem('refreshToken', data.refreshToken);
             localStorage.setItem('role', data.role); 
             localStorage.setItem('user_id', data.userId);
-            // Dispatch user info to Redux
             dispatch(login(data));
-
-            alert('Signin successful');
-
-            // Navigate according to role
             const role = localStorage.getItem('role');
             if (role === 'admin') {
                 navigate('/admin-dashboard');
-            } else if (role === 'manager'|| role === 'employee') {
+            } else if (role === 'manager' || role === 'employee') {
                 navigate('/employee-dashboard'); 
             } 
-
         } catch (err) {
             setError(err.message);
         }
@@ -71,14 +60,28 @@ const Signin = () => {
 
                     <div>
                         <label className="block text-gray-300 font-semibold">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange}
-                            className="w-full border border-gray-600 bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                name="password"
+                                value={form.password}
+                                onChange={handleChange}
+                                className="w-full border border-gray-600 bg-gray-700 text-white p-2 pr-10 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-2 flex items-center text-gray-300 hover:text-white"
+                                tabIndex={-1}
+                            >
+                                {showPassword ? (
+                                    <EyeIcon className="h-5 w-5" />
+                                ) : (
+                                    <EyeSlashIcon className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <button

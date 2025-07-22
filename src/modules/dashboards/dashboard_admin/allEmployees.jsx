@@ -1,44 +1,59 @@
 import { useEffect, useState } from 'react';
-import { getEmployees } from '../../../api/apiConfig';
+import { getEmployees, updateEmployee } from '../../../api/apiConfig';
 import DashboardLayout from '../../../layouts/dashboard_layout';
-import { FaHome, FaUserPlus, FaClock, FaProjectDiagram, FaTasks } from 'react-icons/fa';
+import { getSidebarLinks } from '../../../utils/sideLinks';
+import { FaEdit } from 'react-icons/fa';
 
 const ViewAllEmployees = () => {
   const [employees, setEmployees] = useState([]);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [updatedData, setUpdatedData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Get token and role from localStorage
   const token = localStorage.getItem('accessToken');
-
-  const sidebarLinks = [
-    { to: '/admin-dashboard', label: 'Home', icon: <FaHome /> },
-    { to: '/signup', label: 'Add User', icon: <FaUserPlus /> },
-    { to: '/view-all-attendance', label: 'Attendance', icon: <FaClock /> },
-    { to: '/view-all-employees', label: 'View Employees', icon: <FaUserPlus /> },
-    { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
-    { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
-    { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-    { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
-  ];
+  const role = localStorage.getItem('role');
+  const sidebarLinks = getSidebarLinks(role);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getEmployees(token);
-        setEmployees(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch employees');
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchEmployees();
   }, [token]);
 
+  const fetchEmployees = async () => {
+    try {
+      const data = await getEmployees(token);
+      setEmployees(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch employees');
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (employee) => {
+    setEditingEmployee(employee.employeeId);
+    setUpdatedData(employee);
+  };
+
+  const handleUpdateChange = (field, value) => {
+    setUpdatedData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleUpdateSubmit = async () => {
+    try {
+      await updateEmployee(editingEmployee, updatedData);
+      setEditingEmployee(null);
+      fetchEmployees();
+    } catch (err) {
+      console.error('Update failed:', err);
+    }
+  };
+
   return (
-    <DashboardLayout role="Admin" sidebarLinks={sidebarLinks}>
+    <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       <div className="bg-white shadow-xl rounded-xl p-6">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">All Employees</h2>
 
@@ -61,23 +76,117 @@ const ViewAllEmployees = () => {
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Username</th>
                   <th className="px-4 py-2">Contact</th>
-                  <th className="px-4 py-2">Manager Full Name</th>
+                  <th className="px-4 py-2">Manager Name</th>
                   <th className="px-4 py-2">Manager ID</th>
+                  <th className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {employees.map((emp, index) => (
                   <tr key={index} className="border-b">
                     <td className="px-4 py-2">{emp.employeeId}</td>
-                    <td className="px-4 py-2">{emp.fullName}</td>
-                    <td className="px-4 py-2">{emp.role}</td>
-                    <td className="px-4 py-2">{emp.designation}</td>
-                    <td className="px-4 py-2">Rs. {emp.salary}</td>
-                    <td className="px-4 py-2">{emp.email}</td>
-                    <td className="px-4 py-2">{emp.username}</td>
-                    <td className="px-4 py-2">{emp.contact}</td>
-                    <td className="px-4 py-2">{emp.managerFullName}</td>
-                    <td className="px-4 py-2">{emp.managerId}</td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.fullName || ''}
+                          onChange={(e) => handleUpdateChange('fullName', e.target.value)}
+                        />
+                      ) : emp.fullName}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <select
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.role}
+                          onChange={(e) => handleUpdateChange('role', e.target.value)}
+                        >
+                          <option value="employee">Employee</option>
+                          <option value="manager">Manager</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      ) : emp.role}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.designation || ''}
+                          onChange={(e) => handleUpdateChange('designation', e.target.value)}
+                        />
+                      ) : emp.designation}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          type="number"
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.salary || ''}
+                          onChange={(e) => handleUpdateChange('salary', e.target.value)}
+                        />
+                      ) : `Rs. ${emp.salary}`}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.email || ''}
+                          onChange={(e) => handleUpdateChange('email', e.target.value)}
+                        />
+                      ) : emp.email}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.username || ''}
+                          onChange={(e) => handleUpdateChange('username', e.target.value)}
+                        />
+                      ) : emp.username}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.contact || ''}
+                          onChange={(e) => handleUpdateChange('contact', e.target.value)}
+                        />
+                      ) : emp.contact}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.managerFullName || ''}
+                          onChange={(e) => handleUpdateChange('managerFullName', e.target.value)}
+                        />
+                      ) : emp.managerFullName}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <input
+                          type="number"
+                          className="border px-2 py-1 rounded"
+                          value={updatedData.managerId || ''}
+                          onChange={(e) => handleUpdateChange('managerId', e.target.value)}
+                        />
+                      ) : emp.managerId}
+                    </td>
+                    <td className="px-4 py-2">
+                      {editingEmployee === emp.employeeId ? (
+                        <button
+                          onClick={handleUpdateSubmit}
+                          className="text-green-600 hover:underline font-medium"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <FaEdit
+                          onClick={() => handleEdit(emp)}
+                          className="cursor-pointer text-blue-600 hover:text-blue-800"
+                        />
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -1,11 +1,11 @@
 import DashboardLayout from '../../../layouts/dashboard_layout';
 import { getSidebarLinks } from '../../../utils/sideLinks';
-
-const role = localStorage.getItem("role");
-const sidebarLinks = getSidebarLinks(role);
-
+import { useSelector } from 'react-redux';
 
 const AdminDashboard = () => {
+  const role = useSelector((state) => state.authReducer.role);
+  const sidebarLinks = getSidebarLinks(role);
+
   return (
     <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       <div className="text-xl font-semibold mb-4">Welcome Admin</div>

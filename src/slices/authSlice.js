@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    user: null, 
-    accessToken: null,
-    refreshToken: null,
+    user_id: localStorage.getItem("user_id"),
+    role: localStorage.getItem("role"), 
+    accessToken: localStorage.getItem("accessToken"),
+    refreshToken: localStorage.getItem('refreshToken'),
 };
 
 const authSlice = createSlice({
@@ -13,18 +14,21 @@ const authSlice = createSlice({
     reducers: {
 
         login: (state, action) => {
-            const { user, accessToken, refreshToken } = action.payload;
-            state.user = user;
+            const { user_id, role , accessToken, refreshToken } = action.payload;
+            console.log("🧠 login reducer received:", action.payload);
+            state.user_id = user_id;
+            state.role = role;
             state.accessToken = accessToken;
             state.refreshToken = refreshToken;
 
+            localStorage.setItem("user_id", user_id);
+            localStorage.setItem("role", role);
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
-            //localStorage.setItem("role", user.role);
-            //localStorage.setItem("user_id", user.id);
         },
         logout: (state) => {
-            state.user = null;
+            state.user_id = null;
+            state.role = null;
             state.accessToken = null;
             state.refreshToken = null;
 

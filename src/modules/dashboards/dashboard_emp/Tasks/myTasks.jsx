@@ -51,7 +51,7 @@ const MyTasks = () => {
             const response = await updateTaskStatus(taskId, newStatus);
 
             const updatedTasks = tasks.map(task =>
-                task.task_id === taskId
+                task.task_id === taskId 
                     ? {
                         ...task,
                         status: newStatus,

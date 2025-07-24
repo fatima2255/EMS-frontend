@@ -22,17 +22,25 @@ const Signin = () => {
         setError('');
         try {
             const data = await signinUser(form);
-            localStorage.setItem('accessToken', data.accessToken);
-            localStorage.setItem('refreshToken', data.refreshToken);
-            localStorage.setItem('role', data.role); 
-            localStorage.setItem('user_id', data.userId);
-            dispatch(login(data));
+            console.log("data from backend:", data);
+            // localStorage.setItem('accessToken', data.accessToken);
+            // localStorage.setItem('refreshToken', data.refreshToken);
+            // localStorage.setItem('role', data.role); 
+            // localStorage.setItem('user_id', data.userId);
+
+            dispatch(login({
+                user_id: data.userId,
+                role: data.role,
+                accessToken: data.accessToken,
+                refreshToken: data.refreshToken,
+            }))
+            console.log("id from localStorage:", localStorage.getItem('user_id'));
             const role = localStorage.getItem('role');
             if (role === 'admin') {
                 navigate('/admin-dashboard');
             } else if (role === 'manager' || role === 'employee') {
-                navigate('/employee-dashboard'); 
-            } 
+                navigate('/employee-dashboard');
+            }
         } catch (err) {
             setError(err.message);
         }

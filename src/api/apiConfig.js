@@ -217,3 +217,22 @@ export const updateTaskStatus = async (taskId, status) => {
   });
   return response.data;
 };
+
+//===================================================== REPORT API ==========================================================
+export const generateReport = async (userId) => {
+  const token = localStorage.getItem('accessToken');
+    try {
+        const response = await axios.get(`${API_URL}/reports/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Add the token
+            },
+            responseType: 'blob',
+        });
+
+        return response.data; 
+    } catch (err) {
+        console.error('Error generating report:', err);
+        throw err;
+    }
+};
+

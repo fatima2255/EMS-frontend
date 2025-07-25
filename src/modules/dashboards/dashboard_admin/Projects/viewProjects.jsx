@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
-import { FaEdit, FaTrash} from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import { getAllProjects, updateProject, deleteProject } from '../../../../api/apiConfig';
 import { getSidebarLinks } from '../../../../utils/sideLinks';
+import { useSelector } from 'react-redux';
 
-const role = localStorage.getItem('role');
-const sidebarLinks = getSidebarLinks(role);
+
 
 
 const ViewProjects = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
+    const role = useSelector((state) => state.authReducer.role);
+    const sidebarLinks = getSidebarLinks(role);
 
     // State for update modal
     const [editingProject, setEditingProject] = useState(null);
@@ -21,7 +23,6 @@ const ViewProjects = () => {
 
     // State for delete confirmation
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-    const role = localStorage.getItem('role');
 
     useEffect(() => {
         fetchAllProjects();
@@ -115,7 +116,7 @@ const ViewProjects = () => {
 
                     {/* Update Modal */}
                     {editingProject && (
-                        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+                        <div className="fixed inset-0 backdrop-blur-sm bg-transparent flex justify-center items-center z-50">
                             <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-md">
                                 <h3 className="text-xl font-semibold mb-4 text-blue-800">Update Project</h3>
                                 <input
@@ -152,9 +153,9 @@ const ViewProjects = () => {
 
                     {/* Delete Confirmation */}
                     {confirmDeleteId !== null && (
-                        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+                        <div className="fixed inset-0 backdrop-blur-sm bg-transparent flex justify-center items-center z-50">
                             <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-sm">
-                                <h3 className="text-lg font-semibold mb-4 text-red-700">Are you sure you want to delete this project?</h3>
+                                <h3 className="text-lg font-semibold mb-4 text-black">Are you sure you want to delete this project?</h3>
                                 <div className="flex justify-end gap-4">
                                     <button
                                         onClick={() => setConfirmDeleteId(null)}
@@ -166,7 +167,7 @@ const ViewProjects = () => {
                                         onClick={() => handleDelete(confirmDeleteId)}
                                         className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                                     >
-                                        Yes, Delete
+                                        Yes, Delete 🗑️  
                                     </button>
                                 </div>
                             </div>

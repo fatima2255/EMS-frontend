@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { getAllTasks, getAllProjects, getEmployees, updateTaskStatus } from '../../../../api/apiConfig';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
 import { getSidebarLinks } from '../../../../utils/sideLinks';
+import { useSelector } from 'react-redux';
 
 const MyTasks = () => {
+    const role = useSelector((state) => state.authReducer.role);
+    const sidebarLinks = getSidebarLinks(role);
     const userId = localStorage.getItem('user_id');
-    const role = localStorage.getItem('role');
     const [tasks, setTasks] = useState([]);
     const [projects, setProjects] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
-    const sidebarLinks = getSidebarLinks(role);
 
 
     useEffect(() => {
@@ -51,7 +52,7 @@ const MyTasks = () => {
             const response = await updateTaskStatus(taskId, newStatus);
 
             const updatedTasks = tasks.map(task =>
-                task.task_id === taskId 
+                task.task_id === taskId
                     ? {
                         ...task,
                         status: newStatus,

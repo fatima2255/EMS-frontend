@@ -3,6 +3,7 @@ import { getEmployees, updateEmployee } from '../../../api/apiConfig';
 import DashboardLayout from '../../../layouts/dashboard_layout';
 import { getSidebarLinks } from '../../../utils/sideLinks';
 import { FaEdit } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const ViewAllEmployees = () => {
   const [employees, setEmployees] = useState([]);
@@ -12,7 +13,7 @@ const ViewAllEmployees = () => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('accessToken');
-  const role = localStorage.getItem('role');
+  const role = useSelector((state) => state.authReducer.role);
   const sidebarLinks = getSidebarLinks(role);
 
   useEffect(() => {
@@ -135,15 +136,7 @@ const ViewAllEmployees = () => {
                         />
                       ) : emp.email}
                     </td>
-                    <td className="px-4 py-2">
-                      {editingEmployee === emp.employeeId ? (
-                        <input
-                          className="border px-2 py-1 rounded"
-                          value={updatedData.username || ''}
-                          onChange={(e) => handleUpdateChange('username', e.target.value)}
-                        />
-                      ) : emp.username}
-                    </td>
+                    <td className="px-4 py-2">{emp.username}</td>
                     <td className="px-4 py-2">
                       {editingEmployee === emp.employeeId ? (
                         <input

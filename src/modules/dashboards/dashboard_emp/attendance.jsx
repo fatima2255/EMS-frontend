@@ -5,13 +5,15 @@ import { FaSignInAlt, FaSignOutAlt, FaCoffee, FaUndo } from 'react-icons/fa';
 import { getAttendanceLogs, postAttendanceActivity } from '../../../api/apiConfig';
 import { getSidebarLinks } from '../../../utils/sideLinks';
 import DashboardLayout from '../../../layouts/dashboard_layout';
+import { useSelector } from 'react-redux';
 
 const AttendancePage = () => {
   const dispatch = useDispatch();
   const [logs, setLogs] = useState([]);
   const [message, setMessage] = useState('');
   const userId = localStorage.getItem('user_id');
-  const role = localStorage.getItem('role');
+  const role = useSelector((state) => state.authReducer.role);
+  const sidebarLinks = getSidebarLinks(role);
 
   const fetchLogs = async () => {
     try {
@@ -52,8 +54,6 @@ const AttendancePage = () => {
       setMessage(err.response?.data?.message || '❌ Error performing action');
     }
   };
-
- const sidebarLinks = getSidebarLinks(role);
 
 
   return (

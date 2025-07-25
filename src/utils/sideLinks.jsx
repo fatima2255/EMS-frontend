@@ -24,8 +24,8 @@ export const getSidebarLinks = (role) => {
             { to: '/add-projects', label: 'Add Projects', icon: <FaProjectDiagram /> },
             { to: '/view-projects', label: 'Projects', icon: <FaProjectDiagram /> },
             { to: '/add-tasks', label: 'Assign Tasks', icon: <FaTasks /> },
-            { to: '/report', label: 'Reports', icon: <FaDownload /> },
             { to: '/tasks', label: 'Tasks', icon: <FaTasks /> },
+            { to: '/report', label: 'Reports', icon: <FaDownload /> },
         ];
     }
 };

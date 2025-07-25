@@ -3,6 +3,7 @@ import { fetchAllAttendanceLogs, getAttendanceLogs } from "../../../api/apiConfi
 import DashboardLayout from "../../../layouts/dashboard_layout";
 import { getSidebarLinks } from "../../../utils/sideLinks";
 import { FaSyncAlt } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const AdminAttendanceView = () => {
   const [logs, setLogs] = useState([]);
@@ -12,7 +13,7 @@ const AdminAttendanceView = () => {
   const [searchDate, setSearchDate] = useState("");
 
 
-  const role = localStorage.getItem("role");
+  const role = useSelector((state) => state.authReducer.role);
   const sidebarLinks = getSidebarLinks(role);
 
 
@@ -132,7 +133,7 @@ const AdminAttendanceView = () => {
             <table className="min-w-full text-sm text-left text-gray-700">
               <thead className="bg-gradient-to-r from-blue-900 to-black text-white">
                 <tr>
-                  <th className="px-4 py-2">#</th>
+                  <th className="px-4 py-2">Sr #</th>
                   <th className="px-4 py-2">User ID</th>
                   <th className="px-4 py-2">Full Name</th>
                   <th className="px-4 py-2">Activity</th>

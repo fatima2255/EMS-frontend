@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../../../layouts/dashboard_layout';
-import { getEmployees } from '../../../api/apiConfig';
+import { getEmployees, generateReport } from '../../../api/apiConfig';
 import { getSidebarLinks } from '../../../utils/sideLinks';
+import { useSelector } from 'react-redux';
 
-const role = localStorage.getItem('role');
-const sidebarLinks = getSidebarLinks(role);
 
 const Report = () => {
     const [users, setUsers] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState('');
     const [loading, setLoading] = useState(true);
+
+    const role = useSelector((state) => state.authReducer.role);
+    const sidebarLinks = getSidebarLinks(role);
+
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -35,13 +38,7 @@ const Report = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/${selectedUserId}`, {
-                method: 'GET',
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch report.');
-
-            const blob = await response.blob();
+            const blob = await generateReport(selectedUserId);
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');
             link.href = url;
@@ -65,7 +62,7 @@ const Report = () => {
                         <p className="text-center text-gray-600">Loading users...</p>
                     ) : (
                         <>
-                            <label className="block text-blue-900 font-semibold mb-2">Select User</label>
+                            <label className="block text-blue-900 font-semibold mb-2">Select Employee</label>
                             <select
                                 value={selectedUserId}
                                 onChange={(e) => setSelectedUserId(e.target.value)}

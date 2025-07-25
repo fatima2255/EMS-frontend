@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAllTasks, getAllProjects, getEmployees } from '../../../../api/apiConfig';
 import DashboardLayout from '../../../../layouts/dashboard_layout';
 import { getSidebarLinks } from '../../../../utils/sideLinks';
+import { useSelector } from 'react-redux';
 
 
 const TaskList = () => {
@@ -9,10 +10,9 @@ const TaskList = () => {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const role = localStorage.getItem('role');
-
+    const role = useSelector((state) => state.authReducer.role);
     const sidebarLinks = getSidebarLinks(role);
+
 
     useEffect(() => {
         const fetchData = async () => {

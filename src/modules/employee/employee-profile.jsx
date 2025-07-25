@@ -5,9 +5,9 @@ import { addEmployeeProfile } from '../../api/apiConfig';
 const EmployeeProfile = () => {
     const navigate = useNavigate();
 
-    const userId = localStorage.getItem("user_id");
-    const userRole = localStorage.getItem("role");
-
+    const userId = localStorage.getItem("new_user_id");
+    //const userRole = useSelector((state) => state.authReducer.role);
+    const userRole = localStorage.getItem("new_role"); 
     const [formData, setFormData] = useState({
         address: '',
         designation: '',
@@ -39,6 +39,8 @@ const EmployeeProfile = () => {
             await addEmployeeProfile(dataToSend);
 
             alert("Profile submitted successfully.");
+            localStorage.removeItem('new_user_id');
+            localStorage.removeItem('new_role');
             navigate('/admin-dashboard'); 
         } catch (err) {
             alert('Error: ' + (err.message || 'Something went wrong'));
@@ -85,6 +87,7 @@ const EmployeeProfile = () => {
                             onChange={handleChange}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 text-white bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter your salary"
+                            min="10000"
                             required
                         />
                     </div>
@@ -98,6 +101,7 @@ const EmployeeProfile = () => {
                             onChange={handleChange}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 text-white bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter manager ID"
+                             min="1"
                         />
                     </div>
 

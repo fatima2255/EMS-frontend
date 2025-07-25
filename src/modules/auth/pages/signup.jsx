@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signupUser } from '../../../api/apiConfig';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -12,10 +13,11 @@ const Signup = () => {
     email: '',
     contact: '',
     password: '',
-    role: '', 
+    role: '',
   });
 
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -31,14 +33,16 @@ const Signup = () => {
     try {
       const data = await signupUser(form);
 
-      localStorage.setItem('user_id', data.userId);
-      localStorage.setItem('role', data.role);
+      //localStorage.clear();
+      localStorage.setItem('new_user_id', data.userId);
+      localStorage.setItem('new_role', data.role);
 
       alert('Signup successful! Redirecting to profile setup...');
 
       navigate('/employee-profile');
     } catch (err) {
       setError(err.message || 'Signup failed');
+      alert(error);
     }
   };
 
@@ -47,8 +51,6 @@ const Signup = () => {
       <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-400">Create Your Account</h2>
 
-        {error && <p className="text-red-400 mb-4 text-center">{error}</p>}
-
         <form onSubmit={handleSubmit} className="space-y-5">
           {[
             { label: "First Name", name: "firstName", type: "text" },
@@ -56,10 +58,9 @@ const Signup = () => {
             { label: "Username", name: "username", type: "text" },
             { label: "Email", name: "email", type: "email" },
             { label: "Contact", name: "contact", type: "text" },
-            { label: "Password", name: "password", type: "password" },
           ].map((field) => (
             <div key={field.name}>
-              <label className="block text-gray-300 font-medium">{field.label}</label>
+              <label className="block text-gray-300 font-medium">{field.label} <span className="text-red-500">*</span> </label>
               <input
                 type={field.type}
                 name={field.name}
@@ -69,7 +70,36 @@ const Signup = () => {
                 required
               />
             </div>
+
           ))}
+
+          {/* Password Field with Show/Hide */}
+          <div>
+            <label className="block text-gray-300 font-medium">Password <span className="text-red-500">*</span> </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full bg-gray-700 text-white border border-gray-600 p-2 pr-10 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-2 flex items-center text-gray-300 hover:text-white"
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          </div>
+
 
           <div>
             <label className="block text-gray-300 font-medium mb-1">Role</label>
@@ -93,6 +123,7 @@ const Signup = () => {
           >
             Sign Up
           </button>
+
         </form>
       </div>
     </div>

@@ -10,7 +10,8 @@ const AdminAttendanceView = () => {
   const [searchUserId, setSearchUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchDate, setSearchDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
 
   const role = useSelector((state) => state.authReducer.role);
@@ -39,9 +40,10 @@ const AdminAttendanceView = () => {
     setError(null);
 
     const userId = searchUserId.trim();
-    const date = searchDate.trim();
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
 
-    if (!userId && !date) {
+    if (!userId && !start && !end) {
       fetchAllLogs();
       return;
     }
@@ -56,11 +58,14 @@ const AdminAttendanceView = () => {
         filteredLogs = await fetchAllAttendanceLogs();
       }
 
-      // If date is provided, filter the logs
-      if (date) {
+      // Filter logs between startDate and endDate
+      if (start || end) {
         filteredLogs = filteredLogs.filter((log) => {
-          const logDate = new Date(log.activity_time).toISOString().split("T")[0];
-          return logDate === date;
+          const logDate = new Date(log.activity_time);
+          return (
+            (!start || logDate >= start) &&
+            (!end || logDate <= end)
+          );
         });
       }
 
@@ -75,6 +80,7 @@ const AdminAttendanceView = () => {
   };
 
 
+
   const formatDate = (datetime) => new Date(datetime).toLocaleDateString();
   const formatTime = (datetime) =>
     new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -82,22 +88,29 @@ const AdminAttendanceView = () => {
   return (
     <DashboardLayout role={role} sidebarLinks={sidebarLinks}>
       <div className="bg-white shadow-xl rounded-xl p-6">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Attendance Logs</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-left">Attendance Logs</h2>
 
-        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-center justify-center mb-6">
+        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-center justify-end mb-6">
           <input
             type="text"
             placeholder="Search by User ID"
             value={searchUserId}
             onChange={(e) => setSearchUserId(e.target.value)}
-            className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            className="border border-gray-300 px-4 py-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
 
           <input
             type="date"
-            value={searchDate}
-            onChange={(e) => setSearchDate(e.target.value)}
-            className="border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+          />
+
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
           />
 
           <button
@@ -112,7 +125,8 @@ const AdminAttendanceView = () => {
             type="button"
             onClick={() => {
               setSearchUserId("");
-              setSearchDate("");
+              setStartDate("");
+              setEndDate("");
               fetchAllLogs();
             }}
             title="Refresh"

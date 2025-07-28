@@ -3,13 +3,13 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 const AttendanceChart = ({ data }) => (
   <div className="bg-white p-4 rounded shadow">
     <h3 className="text-lg font-bold mb-3">Attendance Overview</h3>
-    <ResponsiveContainer width="100%" height={250}>
+    <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey="present" stroke="#2563EB" strokeWidth={2} />
+        <Line type="monotone" dataKey="present" stroke="#143b8d5e" strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
   </div>

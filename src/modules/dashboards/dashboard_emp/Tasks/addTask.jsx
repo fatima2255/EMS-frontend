@@ -125,7 +125,7 @@ const AddTask = () => {
                                     .filter(user => user.role?.toLowerCase() !== 'admin')
                                     .map(user => (
                                         <option key={user.employeeId} value={user.employeeId}>
-                                            {user.fullName} (ID: {user.employeeId})
+                                            {user.username} (ID: {user.employeeId})
                                         </option>
                                     ))}
                             </select>
